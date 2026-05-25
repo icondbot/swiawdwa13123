@@ -1,0 +1,123 @@
+72Tracking Prevention blocked access to storage for <URL>.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+(index):1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/.
+/#/login:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/out-4.5.45.js.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/out-4.5.45.js.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/out-4.5.45.js.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/out-4.5.45.js.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.network/.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fresident.icondo.asia&stripe_xdm_c=default826669&stripe_xdm_p=1#__stripe_transport__.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://js.stripe.com/v2/m/outer.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.network/inner.html#referrer=https%3A%2F%2Freplit.com%2F&title=iCondo%20-%20System%20Login&url=https%3A%2F%2Fresident.icondo.asia%2F%23%2Flogin&muid=cf589216-9f6c-4e55-8f4c-f3da92e69850e8633f&sid=266147d7-82dd-4d19-8f4d-09d12a1bda96d94a6e&version=6&preview=false&.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/login:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+/#/me:1 Tracking Prevention blocked access to storage for https://m.stripe.com/6.
+1770885033324.main.671fe2189f48a84c0789.bundle.js:60 Object
+
+Warning: Don’t paste code into the DevTools Console that you don’t understand or haven’t reviewed yourself. This could allow attackers to steal your identity or take control of your computer. Please type ‘allow pasting’ below and press Enter to allow pasting.
+allow pasting
+// Paste this in Console AFTER logging in on resident.icondo.asia
+(async () => {
+  const entries = performance.getEntriesByType('resource');
+  const loginEntry = entries.find(e => e.name.includes('login') || e.name.includes('auth'));
+  console.log('Login URL found:', loginEntry?.name);
+  
+  // Also intercept future requests - paste this BEFORE logging in instead:
+  const origFetch = window.fetch;
+  window.fetch = async (...args) => {
+    const [url, opts] = args;
+    if (String(url).includes('login') || String(url).includes('auth')) {
+      console.log('=== INTERCEPTED ===');
+      console.log('URL:', url);
+      console.log('Headers:', JSON.stringify(opts?.headers, null, 2));
+      console.log('Body:', opts?.body);
+    }
+    return origFetch(...args);
+  };
+  console.log('Interceptor active — now log in');
+})();
+VM666:5 Login URL found: https://resident.icondo.asia/assets/images/login_background.png
+VM666:19 Interceptor active — now log in
+Promise {<fulfilled>: undefined}
+// Paste this in Console AFTER logging in on resident.icondo.asia
+(async () => {
+  const entries = performance.getEntriesByType('resource');
+  const loginEntry = entries.find(e => e.name.includes('login') || e.name.includes('auth'));
+  console.log('Login URL found:', loginEntry?.name);
+  
+  // Also intercept future requests - paste this BEFORE logging in instead:
+  const origFetch = window.fetch;
+  window.fetch = async (...args) => {
+    const [url, opts] = args;
+    if (String(url).includes('login') || String(url).includes('auth')) {
+      console.log('=== INTERCEPTED ===');
+      console.log('URL:', url);
+      console.log('Headers:', JSON.stringify(opts?.headers, null, 2));
+      console.log('Body:', opts?.body);
+    }
+    return origFetch(...args);
+  };
+  console.log('Interceptor active — now log in');
+})();
+VM670:5 Login URL found: https://resident.icondo.asia/assets/images/login_background.png
+VM670:19 Interceptor active — now log in
+Promise {<fulfilled>: undefined}

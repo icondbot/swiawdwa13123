@@ -1,0 +1,44 @@
+modules = ["nodejs-24", "postgresql-16"]
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 80
+
+[[ports]]
+localPort = 20649
+externalPort = 3000
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+ICONDO_API_BASE = "https://services.icondo.asia/api/v1"
+ICONDO_CONDO_ID = "7f2280c3-4165-4e92-94c6-6c8123d354fa"
+ICONDO_UNIT_ID = "f11d99a6-fc92-45d3-8b55-9572c926faf9"
+ICONDO_USER_ID = "a5c12a24-39cf-4fae-b58f-335e87b78eb9"
+ICONDO_FACILITY_ID = "658cb71b-23e7-40c2-b78d-3a38c200b8f5"

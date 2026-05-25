@@ -1,0 +1,400 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: iCondo Tennis Court Booking API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: bookings
+    description: Booking management
+  - name: settings
+    description: App settings and credentials
+  - name: scheduler
+    description: Scheduler status and control
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List all bookings
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, success, failed, cancelled]
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Manually create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid input
+
+  /bookings/upcoming:
+    get:
+      operationId: getUpcomingSlots
+      tags: [bookings]
+      summary: Get upcoming Sunday 4pm slots with status
+      responses:
+        "200":
+          description: Upcoming slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UpcomingSlot"
+
+  /bookings/stats:
+    get:
+      operationId: getBookingStats
+      tags: [bookings]
+      summary: Booking statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingStats"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get a single booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBooking
+      tags: [bookings]
+      summary: Update a booking status or notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingPatch"
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteBooking
+      tags: [bookings]
+      summary: Delete a booking record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get app settings (credentials masked)
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    put:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Save iCondo credentials and preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsInput"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+        "400":
+          description: Invalid input
+
+  /scheduler/status:
+    get:
+      operationId: getSchedulerStatus
+      tags: [scheduler]
+      summary: Get scheduler status and next run time
+      responses:
+        "200":
+          description: Scheduler status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulerStatus"
+
+  /scheduler/trigger:
+    post:
+      operationId: triggerScheduler
+      tags: [scheduler]
+      summary: Manually trigger the auto-booking attempt
+      responses:
+        "200":
+          description: Trigger result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TriggerResult"
+
+  /bookings/attempt:
+    post:
+      operationId: attemptCustomBooking
+      tags: [bookings]
+      summary: Attempt to book a specific date and time slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingAttemptInput"
+      responses:
+        "200":
+          description: Attempt result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TriggerResult"
+        "400":
+          description: Invalid input
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    Booking:
+      type: object
+      required: [id, date, timeSlot, status, createdAt]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          description: ISO date string (YYYY-MM-DD)
+        timeSlot:
+          type: string
+          description: Time slot e.g. "16:00"
+        status:
+          type: string
+          enum: [pending, success, failed, cancelled]
+        notes:
+          type: ["string", "null"]
+        isAutoBooked:
+          type: boolean
+        createdAt:
+          type: string
+
+    BookingInput:
+      type: object
+      required: [date, timeSlot]
+      properties:
+        date:
+          type: string
+        timeSlot:
+          type: string
+        notes:
+          type: string
+        isAutoBooked:
+          type: boolean
+
+    BookingPatch:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, success, failed, cancelled]
+        notes:
+          type: string
+
+    UpcomingSlot:
+      type: object
+      required: [date, timeSlot, dayOfWeek, isBookingOpen, opensAt]
+      properties:
+        date:
+          type: string
+        timeSlot:
+          type: string
+        dayOfWeek:
+          type: string
+        isBookingOpen:
+          type: boolean
+        opensAt:
+          type: string
+        booking:
+          $ref: "#/components/schemas/Booking"
+
+    BookingStats:
+      type: object
+      required: [total, successful, failed, pending, successRate]
+      properties:
+        total:
+          type: integer
+        successful:
+          type: integer
+        failed:
+          type: integer
+        pending:
+          type: integer
+        successRate:
+          type: number
+
+    Settings:
+      type: object
+      required: [id, autoBookEnabled, hasCredentials, courtName, bookingTimeSlot]
+      properties:
+        id:
+          type: integer
+        username:
+          type: ["string", "null"]
+        autoBookEnabled:
+          type: boolean
+        hasCredentials:
+          type: boolean
+        courtName:
+          type: string
+        bookingTimeSlot:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    SettingsInput:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        autoBookEnabled:
+          type: boolean
+        courtName:
+          type: string
+        bookingTimeSlot:
+          type: string
+
+    SchedulerStatus:
+      type: object
+      required: [isRunning, nextRunAt, lastRunAt, autoBookEnabled]
+      properties:
+        isRunning:
+          type: boolean
+        nextRunAt:
+          type: ["string", "null"]
+        lastRunAt:
+          type: ["string", "null"]
+        autoBookEnabled:
+          type: boolean
+        timezone:
+          type: string
+
+    BookingAttemptInput:
+      type: object
+      required: [date, timeSlot]
+      properties:
+        date:
+          type: string
+          description: Target date in YYYY-MM-DD format
+        timeSlot:
+          type: string
+          description: Time slot in HH:MM format (e.g. 16:00)
+
+    TriggerResult:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        booking:
+          $ref: "#/components/schemas/Booking"

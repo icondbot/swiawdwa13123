@@ -1,0 +1,18 @@
+Deploy started
+May 23, 2026 at 10:45 PM
+Cancel deploy
+Deploy failed for bdcb917: Prepare application for deployment and fix startup errors Update application to correctly serve frontend files, specify Node and pnpm versions for consistent builds, and ensure database schema is created before the server starts. Replit-Commit-Author: Agent Replit-Commit-Session-Id: 36bcd670-04e4-48e3-8fe0-81823518e5b7 Replit-Commit-Checkpoint-Type: full_checkpoint Replit-Commit-Event-Id: 0b3b6a2d-f5f1-44d9-8921-f5a23fac159e Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/67a98c14-f6c9-4d07-8d16-8b30ca669a5d/36bcd670-04e4-48e3-8fe0-81823518e5b7/tDR0cPL Replit-Helium-Checkpoint-Created: true
+Exited with status 1 while running your code. Check your deploy logs for more information.
+May 23, 2026 at 10:45 PM
+
+Rollback
+Deploy started for bdcb917: Prepare application for deployment and fix startup errors Update application to correctly serve frontend files, specify Node and pnpm versions for consistent builds, and ensure database schema is created before the server starts. Replit-Commit-Author: Agent Replit-Commit-Session-Id: 36bcd670-04e4-48e3-8fe0-81823518e5b7 Replit-Commit-Checkpoint-Type: full_checkpoint Replit-Commit-Event-Id: 0b3b6a2d-f5f1-44d9-8921-f5a23fac159e Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/67a98c14-f6c9-4d07-8d16-8b30ca669a5d/36bcd670-04e4-48e3-8fe0-81823518e5b7/tDR0cPL Replit-Helium-Checkpoint-Created: true
+New commit via Auto-Deploy
+May 23, 2026 at 10:42 PM
+Deploy failed for a7824ca: Add deployment configuration for Render and update application settings Configure the application for deployment on Render by modifying the API server to serve static frontend files, adjusting Vite configuration to handle environment variables, removing obsolete settings, and creating a `render.yaml` file. Replit-Commit-Author: Agent Replit-Commit-Session-Id: 36bcd670-04e4-48e3-8fe0-81823518e5b7 Replit-Commit-Checkpoint-Type: full_checkpoint Replit-Commit-Event-Id: 3ecc098c-931f-4593-8b7d-e4af6f0e7b77 Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/67a98c14-f6c9-4d07-8d16-8b30ca669a5d/36bcd670-04e4-48e3-8fe0-81823518e5b7/tDR0cPL Replit-Helium-Checkpoint-Created: true
+Exited with status 226 while building your code. Check your deploy logs for more information.
+May 23, 2026 at 10:38 PM
+
+Rollback
+First deploy started for a7824ca: Add deployment configuration for Render and update application settings Configure the application for deployment on Render by modifying the API server to serve static frontend files, adjusting Vite configuration to handle environment variables, removing obsolete settings, and creating a `render.yaml` file. Replit-Commit-Author: Agent Replit-Commit-Session-Id: 36bcd670-04e4-48e3-8fe0-81823518e5b7 Replit-Commit-Checkpoint-Type: full_checkpoint Replit-Commit-Event-Id: 3ecc098c-931f-4593-8b7d-e4af6f0e7b77 Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/67a98c14-f6c9-4d07-8d16-8b30ca669a5d/36bcd670-04e4-48e3-8fe0-81823518e5b7/tDR0cPL Replit-Helium-Checkpoint-Created: true
+May 23, 2026 at 10:38 PM

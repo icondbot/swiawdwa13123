@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: icondo-booker
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @workspace/icondo-booker run build && pnpm --filter @workspace/api-server run build
+    startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: PNPM_VERSION
+        value: 10.26.1
+      - key: API_SECRET
+        sync: false
+      - key: ICONDO_TOKEN
+        sync: false
+      - key: ICONDO_USERNAME
+        sync: false
+      - key: ICONDO_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: icondo-db
+          property: connectionString
+
+  - type: cron
+    name: keep-alive-ping
+    runtime: node
+    region: singapore
+    plan: free
+    schedule: "*/10 * * * *"
+    buildCommand: echo "ready"
+    startCommand: >
+      node -e "
+        fetch('https://icondo-booker.onrender.com/api/healthz')
+          .then(r => r.json())
+          .then(d => { console.log('ping ok', d); process.exit(0); })
+          .catch(e => { console.error('ping failed', e.message); process.exit(1); });
+      "
+
+databases:
+  - name: icondo-db
+    region: singapore
+    plan: free
+    databaseName: icondo
+    user: icondo
