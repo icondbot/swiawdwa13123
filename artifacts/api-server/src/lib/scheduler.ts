@@ -1,10 +1,8 @@
-import cron from "node-cron";
 import { db } from "@workspace/db";
 import { bookingsTable, settingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
 
-let schedulerTask: cron.ScheduledTask | null = null;
 let lastRunAt: Date | null = null;
 let isRunning = false;
 
@@ -311,7 +309,7 @@ function getUpcomingSundays(count: number): string[] {
 // ── Main scheduling logic ─────────────────────────────────────────────────────
 // fromCron=true  → retry even after failures; also executes queued pending records
 // fromCron=false → skip if any non-pending record exists (no duplicate spam on restart)
-async function checkAndBookOpenSlots(fromCron = false): Promise<void> {
+export async function checkAndBookOpenSlots(fromCron = false): Promise<void> {
   const { y, m, d } = sgtParts(new Date());
   const todayUTC = new Date(Date.UTC(y, m - 1, d));
 
@@ -393,17 +391,3 @@ export function getSchedulerStatus() {
   };
 }
 
-export function startScheduler() {
-  if (schedulerTask) schedulerTask.stop();
-
-  // Startup: only try if no record exists yet for this date
-  void checkAndBookOpenSlots(false);
-
-  // Every Sunday midnight SGT: retry even if previous attempts failed
-  schedulerTask = cron.schedule("0 0 * * 0", () => {
-    logger.info("Sunday midnight SGT — burst-booking");
-    void checkAndBookOpenSlots(true);
-  }, { timezone: "Asia/Singapore" });
-
-  logger.info("Scheduler started — fires every Sunday midnight SGT");
-}

@@ -1,6 +1,5 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { startScheduler } from "./lib/scheduler";
 import { ensureTablesExist } from "./lib/setup-db";
 
 const rawPort = process.env["PORT"];
@@ -25,18 +24,18 @@ app.listen(port, (err) => {
   }
   logger.info({ port }, "Server listening");
 
-  // Set up DB tables and then start scheduler (non-fatal if DB is slow to be ready)
+  // Set up DB tables (non-fatal if DB is slow to be ready)
   ensureTablesExist()
     .then(() => {
-      startScheduler();
+      logger.info("DB tables ready");
     })
     .catch((err) => {
-      logger.error({ err, message: err?.message, code: err?.code }, "DB setup failed — scheduler NOT started");
+      logger.error({ err, message: err?.message, code: err?.code }, "DB setup failed");
     });
 
-  // Keep-alive: ping our own health endpoint every 14 minutes so Render's free
-  // tier never sleeps and the Sunday-midnight cron always fires on time.
-  // Self-ping every 5 min as a fallback; the Render cron job is the primary keep-alive.
+  // Keep-alive: self-ping so the UI stays responsive on Render free tier.
+  // The midnight booking is handled by a dedicated Render cron service (cron-entry.ts)
+  // so this ping is only for UI responsiveness, not booking reliability.
   const selfUrl = process.env.RENDER_EXTERNAL_URL
     ? `${process.env.RENDER_EXTERNAL_URL}/api/healthz`
     : `http://localhost:${port}/api/healthz`;
