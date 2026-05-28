@@ -1,5 +1,5 @@
 import { db } from "@workspace/db";
-import { bookingsTable } from "@workspace/db";
+import { bookingsTable, settingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
 
