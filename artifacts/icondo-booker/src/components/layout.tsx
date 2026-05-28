@@ -1,14 +1,12 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, History, CalendarPlus, Settings as SettingsIcon, Antenna } from "lucide-react";
+import { Home, Settings as SettingsIcon, Antenna } from "lucide-react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/book", label: "Book", icon: CalendarPlus },
-    { href: "/bookings", label: "History", icon: History },
+    { href: "/", label: "Home", icon: Home },
     { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
 
