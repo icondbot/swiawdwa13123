@@ -3,6 +3,7 @@ import {
   useGetSettings,
   useAttemptCustomBooking,
   useListBookings,
+  useDeleteBooking,
   getGetUpcomingSlotsQueryKey,
   getGetBookingStatsQueryKey,
   getListBookingsQueryKey,
@@ -14,7 +15,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Clock, Loader2, CalendarClock, XCircle } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { CheckCircle2, Clock, Loader2, CalendarClock, XCircle, Trash2 } from "lucide-react";
 
 const TIME_OPTIONS = [
   "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
@@ -42,6 +47,7 @@ export default function Home() {
   const [timeSlot, setTimeSlot] = useState<string | null>(null);
   const [date, setDate] = useState("");
   const [filter, setFilter] = useState<StatusFilter>("all");
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const { data: settingsRaw } = useGetSettings();
   const settings = settingsRaw as unknown as { bookingTimeSlot: string } | undefined;
@@ -54,6 +60,7 @@ export default function Home() {
   });
 
   const attempt = useAttemptCustomBooking();
+  const deleteBooking = useDeleteBooking();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -78,6 +85,21 @@ export default function Home() {
       },
       onError: () => {
         toast({ title: "Error", description: "Could not reach server", variant: "destructive" });
+      },
+    });
+  };
+
+  const confirmDelete = () => {
+    if (deleteId == null) return;
+    deleteBooking.mutate({ id: deleteId }, {
+      onSuccess: () => {
+        toast({ title: "Deleted" });
+        setDeleteId(null);
+        invalidate();
+      },
+      onError: () => {
+        toast({ title: "Error", description: "Could not delete", variant: "destructive" });
+        setDeleteId(null);
       },
     });
   };
@@ -178,8 +200,8 @@ export default function Home() {
               return (
                 <Card key={b.id}>
                   <CardContent className="py-3 px-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground">
                           {new Date(b.date + "T00:00:00").toLocaleDateString("en-SG", {
                             weekday: "short", day: "numeric", month: "short", year: "numeric",
@@ -187,13 +209,22 @@ export default function Home() {
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5">{fmt12(b.timeSlot)}</p>
                       </div>
-                      <span className={`flex items-center gap-1 text-xs font-semibold shrink-0 ${cfg.color}`}>
-                        <Icon className="w-3.5 h-3.5" />
-                        {cfg.label}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`flex items-center gap-1 text-xs font-semibold ${cfg.color}`}>
+                          <Icon className="w-3.5 h-3.5" />
+                          {cfg.label}
+                        </span>
+                        <button
+                          onClick={() => setDeleteId(b.id)}
+                          className="text-muted-foreground hover:text-red-500 transition-colors p-1 -mr-1"
+                          aria-label="Delete booking"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                     {b.notes && (
-                      <p className="text-xs text-muted-foreground mt-1.5 truncate">{b.notes}</p>
+                      <p className="text-xs text-muted-foreground mt-1.5 break-words">{b.notes}</p>
                     )}
                   </CardContent>
                 </Card>
@@ -206,6 +237,28 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={deleteId != null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this booking?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the record from your history. If it's a queued booking, it will no longer auto-book.
+              This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteBooking.isPending ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );

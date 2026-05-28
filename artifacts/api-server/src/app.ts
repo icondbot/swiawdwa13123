@@ -2,6 +2,7 @@ import express, { type Express, type Request, type Response, type NextFunction }
 import cors from "cors";
 import pinoHttp from "pino-http";
 import path from "path";
+import { createHash } from "crypto";
 import { existsSync, readFileSync } from "fs";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -25,6 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 // Set APP_PASSWORD in Render env vars to require a password to access the app.
 // The /api/healthz endpoint is always public so Render keep-alive works.
 const APP_PASSWORD = process.env.APP_PASSWORD;
+// The cookie stores a hash of the password, never the password itself.
+const AUTH_TOKEN = APP_PASSWORD ? createHash("sha256").update(APP_PASSWORD).digest("hex") : "";
 
 function getAuthCookie(req: Request): string | undefined {
   return req.headers.cookie?.split(";").reduce((acc, c) => {
@@ -79,22 +82,27 @@ if (APP_PASSWORD) {
     res.type("html").send(LOGIN_PAGE());
   });
 
-  // Login submit
+  // Login submit — session cookie (cleared when the browser closes)
   app.post("/login", (req: Request, res: Response) => {
     if (req.body.password === APP_PASSWORD) {
-      const maxAge = 60 * 60 * 24 * 30; // 30 days
-      res.setHeader("Set-Cookie", `icondo_auth=${APP_PASSWORD}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}`);
+      res.setHeader("Set-Cookie", `icondo_auth=${AUTH_TOKEN}; Path=/; HttpOnly; SameSite=Strict; Secure`);
       res.redirect("/");
     } else {
-      res.type("html").send(LOGIN_PAGE(true));
+      res.status(401).type("html").send(LOGIN_PAGE(true));
     }
+  });
+
+  // Logout — clear the cookie
+  app.get("/logout", (_req: Request, res: Response) => {
+    res.setHeader("Set-Cookie", "icondo_auth=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0");
+    res.redirect("/login");
   });
 
   // Gate everything except /login and /api/healthz
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path === "/login") return next();
     if (req.path.startsWith("/api/healthz")) return next();
-    if (getAuthCookie(req) === APP_PASSWORD) return next();
+    if (getAuthCookie(req) === AUTH_TOKEN) return next();
     // API calls get 401, page requests get redirect
     if (req.path.startsWith("/api/")) {
       res.status(401).json({ error: "Unauthorized" });
