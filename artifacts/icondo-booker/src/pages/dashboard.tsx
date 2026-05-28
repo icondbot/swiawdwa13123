@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  useGetUpcomingSlots,
   useGetSettings,
   useAttemptCustomBooking,
   useListBookings,
@@ -13,7 +12,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Clock, Loader2, Zap, CalendarClock, XCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CheckCircle2, Clock, Loader2, CalendarClock, XCircle } from "lucide-react";
 
 const TIME_OPTIONS = [
   "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
@@ -28,28 +29,29 @@ function fmt12(hhmm: string) {
   return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
 }
 
-function fmtDate(dateStr: string) {
-  return new Date(dateStr + "T00:00:00+08:00").toLocaleDateString("en-SG", {
-    weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Singapore",
-  });
-}
+type StatusFilter = "all" | "pending" | "success" | "failed";
 
-function fmtShort(dateStr: string) {
-  return new Date(dateStr + "T00:00:00+08:00").toLocaleDateString("en-SG", {
-    weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Singapore",
-  });
-}
+const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof CheckCircle2 }> = {
+  success:   { label: "Booked",    color: "text-emerald-600", icon: CheckCircle2 },
+  pending:   { label: "Queued",    color: "text-amber-600",   icon: Clock        },
+  failed:    { label: "Failed",    color: "text-red-500",     icon: XCircle      },
+  cancelled: { label: "Cancelled", color: "text-muted-foreground", icon: XCircle },
+};
 
 export default function Home() {
   const [timeSlot, setTimeSlot] = useState<string | null>(null);
+  const [date, setDate] = useState("");
+  const [filter, setFilter] = useState<StatusFilter>("all");
 
-  const { data: slots, isLoading } = useGetUpcomingSlots({ query: { refetchInterval: 30_000 } });
   const { data: settingsRaw } = useGetSettings();
   const settings = settingsRaw as unknown as { bookingTimeSlot: string } | undefined;
   const defaultSlot = settings?.bookingTimeSlot ?? "16:00";
   const effectiveSlot = timeSlot ?? defaultSlot;
 
-  const { data: recentBookings } = useListBookings({}, { query: { refetchInterval: 60_000 } });
+  const filterParam = filter !== "all" ? { status: filter as "pending" | "success" | "failed" } : {};
+  const { data: bookings, isLoading: bookingsLoading } = useListBookings(filterParam, {
+    query: { refetchInterval: 30_000 },
+  });
 
   const attempt = useAttemptCustomBooking();
   const { toast } = useToast();
@@ -61,14 +63,9 @@ export default function Home() {
     queryClient.invalidateQueries({ queryKey: getListBookingsQueryKey() });
   };
 
-  const nextSlot = slots?.[0] ?? null;
-  const isBooked = nextSlot?.booking?.status === "success";
-  const isQueued = nextSlot?.booking?.status === "pending";
-  const windowOpen = nextSlot?.isBookingOpen ?? false;
-
   const handleBook = () => {
-    if (!nextSlot) return;
-    attempt.mutate({ data: { date: nextSlot.date, timeSlot: effectiveSlot } }, {
+    if (!date) return;
+    attempt.mutate({ data: { date, timeSlot: effectiveSlot } }, {
       onSuccess: (res) => {
         const r = res as typeof res & { queued?: boolean };
         toast({
@@ -77,6 +74,7 @@ export default function Home() {
           variant: r.success || r.queued ? "default" : "destructive",
         });
         invalidate();
+        if (r.success || r.queued) setDate("");
       },
       onError: () => {
         toast({ title: "Error", description: "Could not reach server", variant: "destructive" });
@@ -84,151 +82,130 @@ export default function Home() {
     });
   };
 
-  const recentDone = recentBookings?.filter(b => b.status === "success" || b.status === "failed").slice(0, 3) ?? [];
+  const FILTERS: { value: StatusFilter; label: string }[] = [
+    { value: "all",     label: "All"    },
+    { value: "pending", label: "Queued" },
+    { value: "success", label: "Booked" },
+    { value: "failed",  label: "Failed" },
+  ];
 
   return (
-    <div className="space-y-5 max-w-sm mx-auto">
+    <div className="space-y-6 max-w-sm mx-auto">
 
-      {/* Header */}
+      {/* Book */}
       <div>
-        <h1 className="text-xl font-semibold text-foreground">Tennis Court</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Sky@eleven · books automatically every Sunday at midnight SGT</p>
+        <h1 className="text-xl font-semibold text-foreground">Book Court</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Books now if the window is open — otherwise queues and fires at midnight SGT.
+        </p>
       </div>
 
-      {/* Time slot picker */}
-      <div className="space-y-1.5">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Time Slot</p>
-        <Select value={effectiveSlot} onValueChange={(v) => setTimeSlot(v)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {TIME_OPTIONS.map(t => (
-              <SelectItem key={t} value={t}>
-                {fmt12(t)}{t === defaultSlot ? " (default)" : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Next Sunday — main booking card */}
-      {isLoading ? (
-        <Card><CardContent className="pt-6 pb-6">
-          <div className="space-y-3">
-            <div className="h-4 w-24 bg-muted rounded animate-pulse mx-auto" />
-            <div className="h-6 w-48 bg-muted rounded animate-pulse mx-auto" />
-            <div className="h-10 w-full bg-muted rounded animate-pulse" />
+      <Card>
+        <CardContent className="pt-5 pb-5 space-y-4">
+          <div className="space-y-1.5">
+            <Label>Date</Label>
+            <Input
+              type="date"
+              value={date}
+              min={new Date().toISOString().slice(0, 10)}
+              onChange={e => setDate(e.target.value)}
+            />
           </div>
-        </CardContent></Card>
-      ) : nextSlot ? (
-        <Card className={
-          isBooked ? "border-emerald-200 bg-emerald-50/50" :
-          isQueued ? "border-amber-200 bg-amber-50/40" : ""
-        }>
-          <CardContent className="pt-5 pb-5 space-y-4">
-            <div className="text-center">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Next Sunday</p>
-              <p className="text-base font-semibold text-foreground">{fmtDate(nextSlot.date)}</p>
-              <p className="text-3xl font-bold text-primary mt-1">{fmt12(effectiveSlot)}</p>
-            </div>
 
-            {/* Booked */}
-            {isBooked && (
-              <div className="flex flex-col items-center gap-1 py-1">
-                <div className="flex items-center gap-2 text-emerald-700 font-semibold text-base">
-                  <CheckCircle2 className="w-5 h-5" />
-                  Booked!
-                </div>
-                <p className="text-xs text-muted-foreground">See you Sunday.</p>
-              </div>
+          <div className="space-y-1.5">
+            <Label>Time Slot</Label>
+            <Select value={effectiveSlot} onValueChange={(v) => setTimeSlot(v)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TIME_OPTIONS.map(t => (
+                  <SelectItem key={t} value={t}>
+                    {fmt12(t)}{t === defaultSlot ? " (default)" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button
+            size="lg"
+            onClick={handleBook}
+            disabled={!date || attempt.isPending}
+            className="w-full gap-2"
+          >
+            {attempt.isPending ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Booking…</>
+            ) : (
+              <><CalendarClock className="w-4 h-4" /> Book / Queue</>
             )}
+          </Button>
+        </CardContent>
+      </Card>
 
-            {/* Queued */}
-            {isQueued && !isBooked && (
-              <div className="flex flex-col items-center gap-1 py-1">
-                <div className="flex items-center gap-2 text-amber-700 font-semibold text-sm">
-                  <Clock className="w-4 h-4" />
-                  Queued
-                </div>
-                <p className="text-xs text-center text-muted-foreground">
-                  Will auto-book when the window opens{" "}
-                  {fmtShort(nextSlot.opensAt.slice(0, 10))}{" "}at midnight SGT
-                </p>
-              </div>
-            )}
-
-            {/* Not booked — show button */}
-            {!isBooked && !isQueued && (
-              <div className="space-y-2">
-                <Button
-                  size="lg"
-                  onClick={handleBook}
-                  disabled={attempt.isPending}
-                  className="w-full gap-2 text-base"
-                >
-                  {attempt.isPending ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" />{windowOpen ? "Booking…" : "Queuing…"}</>
-                  ) : windowOpen ? (
-                    <><Zap className="w-5 h-5" />Book Now</>
-                  ) : (
-                    <><CalendarClock className="w-5 h-5" />Queue — auto-books at midnight</>
-                  )}
-                </Button>
-                {!windowOpen && (
-                  <p className="text-xs text-center text-muted-foreground">
-                    Window opens {fmtShort(nextSlot.opensAt.slice(0, 10))} at midnight SGT
-                  </p>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ) : null}
-
-      {/* Other upcoming Sundays */}
-      {slots && slots.length > 1 && (
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Other Sundays</p>
-          {slots.slice(1).map(slot => {
-            const s = slot.booking?.status;
-            const color = s === "success" ? "text-emerald-600" : s === "pending" ? "text-amber-600" : "text-muted-foreground";
-            const label = s === "success" ? "✓ Booked" : s === "pending" ? "⏳ Queued" : "Not booked";
-            return (
-              <div key={slot.date} className="flex items-center justify-between py-1.5 px-1 border-b border-border/50 last:border-0">
-                <span className="text-sm text-foreground">{fmtShort(slot.date)}</span>
-                <span className={`text-xs font-medium ${color}`}>{label}</span>
-              </div>
-            );
-          })}
+      {/* Booking history */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h2 className="text-sm font-semibold text-foreground">Bookings</h2>
+          <div className="flex gap-1">
+            {FILTERS.map(f => (
+              <button
+                key={f.value}
+                onClick={() => setFilter(f.value)}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors
+                  ${filter === f.value
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Recent completed bookings */}
-      {recentDone.length > 0 && (
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Recent</p>
-          {recentDone.map(b => (
-            <div key={b.id} className="flex items-center justify-between py-1.5 px-1 border-b border-border/50 last:border-0">
-              <span className="text-sm text-foreground">
-                {new Date(b.date + "T00:00:00").toLocaleDateString("en-SG", {
-                  weekday: "short", day: "numeric", month: "short",
-                })}
-                <span className="text-muted-foreground"> · {b.timeSlot}</span>
-              </span>
-              {b.status === "success" ? (
-                <span className="flex items-center gap-1 text-xs font-medium text-emerald-600">
-                  <CheckCircle2 className="w-3 h-3" /> Booked
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 text-xs font-medium text-red-500">
-                  <XCircle className="w-3 h-3" /> Failed
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+        {bookingsLoading ? (
+          <div className="space-y-2">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="h-14 bg-muted rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : bookings && bookings.length > 0 ? (
+          <div className="space-y-2">
+            {bookings.map(b => {
+              const cfg = STATUS_CONFIG[b.status] ?? STATUS_CONFIG.pending;
+              const Icon = cfg.icon;
+              return (
+                <Card key={b.id}>
+                  <CardContent className="py-3 px-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {new Date(b.date + "T00:00:00").toLocaleDateString("en-SG", {
+                            weekday: "short", day: "numeric", month: "short", year: "numeric",
+                          })}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{fmt12(b.timeSlot)}</p>
+                      </div>
+                      <span className={`flex items-center gap-1 text-xs font-semibold shrink-0 ${cfg.color}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                        {cfg.label}
+                      </span>
+                    </div>
+                    {b.notes && (
+                      <p className="text-xs text-muted-foreground mt-1.5 truncate">{b.notes}</p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-10 text-sm text-muted-foreground">
+            No bookings yet
+          </div>
+        )}
+      </div>
 
     </div>
   );

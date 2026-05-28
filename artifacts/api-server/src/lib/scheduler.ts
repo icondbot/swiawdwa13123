@@ -1,5 +1,5 @@
 import { db } from "@workspace/db";
-import { bookingsTable, settingsTable } from "@workspace/db";
+import { bookingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
 
@@ -292,80 +292,30 @@ async function burstBook(date: string, timeSlot: string, isAuto: boolean): Promi
   });
 }
 
-// Returns next `count` Sunday dates (YYYY-MM-DD) from today in SGT.
-function getUpcomingSundays(count: number): string[] {
-  const { y, m, d } = sgtParts(new Date());
-  const today   = new Date(Date.UTC(y, m - 1, d));
-  const sundays: string[] = [];
-  for (let i = 1; i <= 21 && sundays.length < count; i++) {
-    const c = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + i));
-    if (sgtParts(c).dow === 0) {
-      sundays.push(`${c.getUTCFullYear()}-${String(c.getUTCMonth() + 1).padStart(2, "0")}-${String(c.getUTCDate()).padStart(2, "0")}`);
-    }
-  }
-  return sundays;
-}
 
 // ── Main scheduling logic ─────────────────────────────────────────────────────
-// fromCron=true  → retry even after failures; also executes queued pending records
-// fromCron=false → skip if any non-pending record exists (no duplicate spam on restart)
-export async function checkAndBookOpenSlots(fromCron = false): Promise<void> {
+// Processes any manually queued (pending) bookings whose window is now open.
+// Auto-booking is intentionally removed — only user-queued bookings are executed.
+export async function checkAndBookOpenSlots(): Promise<void> {
   const { y, m, d } = sgtParts(new Date());
   const todayUTC = new Date(Date.UTC(y, m - 1, d));
 
-  const [settings] = await db.select().from(settingsTable).limit(1);
-  const autoSlot    = settings?.bookingTimeSlot ?? "16:00";
-  const autoEnabled = settings?.autoBookEnabled ?? true;
+  // Look back up to 4 weeks and ahead up to 3 weeks for pending bookings
+  const allPending = await db.select().from(bookingsTable)
+    .where(eq(bookingsTable.status, "pending"));
 
-  // Gather all upcoming Sundays
-  const sundays = getUpcomingSundays(3);
-
-  for (const date of sundays) {
-    const windowOpens = new Date(new Date(`${date}T00:00:00.000Z`).getTime() - 7 * 24 * 60 * 60 * 1000);
+  for (const q of allPending) {
+    const windowOpens = new Date(new Date(`${q.date}T00:00:00.000Z`).getTime() - 7 * 24 * 60 * 60 * 1000);
     const windowIsOpen = todayUTC >= windowOpens;
 
-    const existing = await db.select().from(bookingsTable).where(eq(bookingsTable.date, date));
-
-    // 1. Execute any manually queued (pending) bookings whose window just opened
-    //    — always runs regardless of autoEnabled (user explicitly asked for these)
-    if (windowIsOpen) {
-      const queued = existing.filter(b => b.status === "pending");
-      for (const q of queued) {
-        logger.info({ date, timeSlot: q.timeSlot }, "Executing queued booking");
-        // Delete the placeholder then burst-book fresh, preserving original isAuto flag
-        await db.delete(bookingsTable).where(eq(bookingsTable.id, q.id));
-        await burstBook(date, q.timeSlot, q.isAutoBooked);
-      }
-    }
-
-    // 2. Auto-book the default slot — respects autoBookEnabled setting
-    if (!autoEnabled) {
-      logger.info({ date }, "Auto-booking disabled — skipping default slot");
-      continue;
-    }
-
     if (!windowIsOpen) {
-      logger.info({ date, windowOpens }, "Booking window not yet open — skipping auto-slot");
+      logger.info({ date: q.date }, "Window not open yet — skipping queued booking");
       continue;
     }
 
-    const freshExisting = await db.select().from(bookingsTable).where(eq(bookingsTable.date, date));
-
-    if (fromCron) {
-      if (freshExisting.some(b => b.status === "success" && b.timeSlot === autoSlot)) {
-        logger.info({ date }, "Already booked — skipping cron auto-slot");
-        continue;
-      }
-    } else {
-      // Startup: skip if a non-pending record already exists
-      if (freshExisting.some(b => b.timeSlot === autoSlot && b.status !== "pending")) {
-        logger.info({ date }, "Record exists — skipping startup auto-slot");
-        continue;
-      }
-    }
-
-    logger.info({ date, autoSlot, fromCron }, "Auto-booking default slot");
-    await burstBook(date, autoSlot, true);
+    logger.info({ date: q.date, timeSlot: q.timeSlot }, "Executing queued booking");
+    await db.delete(bookingsTable).where(eq(bookingsTable.id, q.id));
+    await burstBook(q.date, q.timeSlot, q.isAutoBooked);
   }
 }
 
