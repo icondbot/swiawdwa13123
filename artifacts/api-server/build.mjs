@@ -15,7 +15,15 @@ async function buildAll() {
   await rm(distDir, { recursive: true, force: true });
 
   await esbuild({
-    entryPoints: [path.resolve(artifactDir, "src/index.ts")],
+    // Two entry points → two output bundles:
+    //   src/index.ts      → dist/index.mjs      (web service)
+    //   src/cron-entry.ts → dist/cron-entry.mjs (Render cron service)
+    // The cron-entry bundle MUST be emitted or the cron service crashes at
+    // startup with "Cannot find module .../dist/cron-entry.mjs".
+    entryPoints: [
+      path.resolve(artifactDir, "src/index.ts"),
+      path.resolve(artifactDir, "src/cron-entry.ts"),
+    ],
     platform: "node",
     bundle: true,
     format: "esm",
