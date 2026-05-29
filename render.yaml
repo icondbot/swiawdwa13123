@@ -43,15 +43,16 @@ services:
           .catch(e => { console.error('ping failed', e.message); process.exit(1); });
       "
 
-  # Dedicated booking cron — runs at Sunday 00:00 SGT (= Saturday 16:00 UTC).
-  # Uses a paid plan so it never hibernates and always fires on time.
-  # This replaces the node-cron scheduler that was inside the web process.
+  # Dedicated booking cron — runs EVERY night at 00:00 SGT (= 16:00 UTC daily).
+  # Must run daily (not weekly) because a booking window opens 7 days before the
+  # target date at midnight SGT — and target dates can fall on any weekday.
+  # Each run processes any queued booking whose window just opened.
   - type: cron
     name: icondo-midnight-booker
     runtime: node
     region: singapore
     plan: starter
-    schedule: "0 16 * * 6"
+    schedule: "0 16 * * *"
     buildCommand: pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build
     startCommand: node --enable-source-maps artifacts/api-server/dist/cron-entry.mjs
     envVars:
