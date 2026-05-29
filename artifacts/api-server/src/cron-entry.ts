@@ -1,7 +1,8 @@
 /**
  * Standalone entry-point for the Render cron service.
  *
- * Runs once at Sunday midnight SGT, burst-books the tennis court, then exits.
+ * Runs every night at midnight SGT (16:00 UTC), processes any queued bookings
+ * whose 7-day booking window just opened, then exits.
  * Deployed as a separate Render cron service so it never gets hibernated —
  * unlike the web process which goes into hibernate mode on the free plan.
  *
@@ -23,7 +24,7 @@ async function main() {
   }
 
   try {
-    await checkAndBookOpenSlots(true);
+    await checkAndBookOpenSlots();
     logger.info("Cron: booking run complete");
     process.exit(0);
   } catch (err) {

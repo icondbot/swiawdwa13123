@@ -4,7 +4,6 @@ import {
   useAttemptCustomBooking,
   useListBookings,
   useDeleteBooking,
-  getGetUpcomingSlotsQueryKey,
   getGetBookingStatsQueryKey,
   getListBookingsQueryKey,
 } from "@workspace/api-client-react";
@@ -65,7 +64,6 @@ export default function Home() {
   const queryClient = useQueryClient();
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: getGetUpcomingSlotsQueryKey() });
     queryClient.invalidateQueries({ queryKey: getGetBookingStatsQueryKey() });
     queryClient.invalidateQueries({ queryKey: getListBookingsQueryKey() });
   };
