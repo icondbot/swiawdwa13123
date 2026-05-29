@@ -127,7 +127,7 @@ export default function Home() {
             <Input
               type="date"
               value={date}
-              min={new Date().toISOString().slice(0, 10)}
+              min={new Date().toLocaleDateString("sv", { timeZone: "Asia/Singapore" })}
               onChange={e => setDate(e.target.value)}
             />
           </div>
