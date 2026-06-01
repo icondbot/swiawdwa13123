@@ -255,14 +255,26 @@ export async function attemptBooking(
   }
 }
 
-// ── Internal: burst for auto-booking — retries for 30s, writes ONE DB record ──
-async function burstBook(date: string, timeSlot: string, isAuto: boolean): Promise<void> {
+// ── Internal: burst-book — retries for 30s, writes exactly ONE DB record ──────
+async function burstBook(
+  date: string,
+  timeSlot: string,
+  isAuto: boolean,
+  opts: { keepRetryingOnUnavailable?: boolean } = {},
+): Promise<void> {
+  // keepRetryingOnUnavailable: when the cron fires right at the SGT-midnight
+  // boundary, iCondo can briefly report the slot "not available" because its
+  // clock hasn't ticked the window open yet — so we keep hammering until it
+  // opens. For on-demand booking from the UI (window already open by our
+  // checks), "not available" means the slot is genuinely taken, so we stop fast
+  // instead of wasting 30s.
+  const { keepRetryingOnUnavailable = false } = opts;
   const deadline = Date.now() + 30_000;
   let attempt    = 0;
   let lastMsg    = "No attempts made";
   let succeeded  = false;
 
-  logger.info({ date, timeSlot }, "Burst booking started");
+  logger.info({ date, timeSlot, keepRetryingOnUnavailable }, "Burst booking started");
 
   while (Date.now() < deadline) {
     attempt++;
@@ -274,8 +286,9 @@ async function burstBook(date: string, timeSlot: string, isAuto: boolean): Promi
       break;
     }
 
-    // Slot is gone (taken by us or someone else) — no point retrying
-    if (result.message.includes("not available")) break;
+    // "not available" = window not open yet (keep trying) OR slot taken (give
+    // up). Only give up on it when we already know the window is open.
+    if (!keepRetryingOnUnavailable && result.message.includes("not available")) break;
     if (/management/i.test(result.message)) break;
 
     await new Promise(r => setTimeout(r, 300));
@@ -315,7 +328,9 @@ export async function checkAndBookOpenSlots(): Promise<void> {
 
     logger.info({ date: q.date, timeSlot: q.timeSlot }, "Executing queued booking");
     await db.delete(bookingsTable).where(eq(bookingsTable.id, q.id));
-    await burstBook(q.date, q.timeSlot, q.isAutoBooked);
+    // Cron fires at the exact midnight boundary, so keep retrying through a
+    // momentary "not available" while iCondo's window ticks open.
+    await burstBook(q.date, q.timeSlot, q.isAutoBooked, { keepRetryingOnUnavailable: true });
   }
 }
 

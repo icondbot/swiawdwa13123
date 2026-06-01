@@ -15,7 +15,10 @@ fires at midnight SGT and burst-books the instant the window opens.
 - Hosted on Render, config in `render.yaml`. Three services + one DB:
   1. `icondo-booker` (web) — Express API + React UI. Start: `dist/index.mjs`.
   2. `keep-alive-ping` (cron, */10 min) — pings `/api/healthz` so web doesn't hibernate.
-  3. `icondo-midnight-booker` (cron, `0 16 * * *` = **00:00 SGT daily**) — Start: `dist/cron-entry.mjs`.
+  3. `icondo-midnight-booker` (cron, `57 15 * * *` = **23:57 SGT daily**) — Start: `dist/cron-entry.mjs`.
+     Starts 3 min early on purpose: it cold-starts + connects to the DB, then
+     `cron-entry.ts` waits until exactly 16:00:00 UTC (00:00 SGT) and fires the
+     burst at that instant — avoids the ~25s cold-start delay that made it miss slots.
   4. `icondo-db` — Postgres.
 - Monorepo, pnpm workspaces: `@workspace/api-server`, `@workspace/icondo-booker`,
   `@workspace/db`, `@workspace/api-zod`, `@workspace/api-client-react`.
@@ -35,8 +38,13 @@ fires at midnight SGT and burst-books the instant the window opens.
   (`node-cron` is an unused leftover dep — leave it; removing it needs a lockfile update.)
 
 ## Timezone rules (Singapore, UTC+8) — get these right
-- Cron `0 16 * * *` = 16:00 UTC = 00:00 SGT. Runs every night (must be daily —
-  target dates fall on any weekday, so the 7-day window opens on any weekday).
+- Cron `57 15 * * *` = 15:57 UTC = 23:57 SGT. Starts 3 min early to pre-warm,
+  then cron-entry.ts sleeps until 16:00:00 UTC (00:00 SGT) and fires. Runs every
+  night (must be daily — the 7-day window can open on any weekday).
+- `burstBook(..., { keepRetryingOnUnavailable })`: cron passes `true` so a
+  momentary "not available" at the boundary (iCondo clock skew) keeps retrying;
+  the UI's on-demand book passes `false` (window already open → "not available"
+  means taken → stop fast). Don't flip these.
 - Server date math uses `sgtParts()` in `scheduler.ts` — always derive "today"
   in SGT, never server local time.
 - Window-open check: window opens 7 days before target at midnight SGT. The

@@ -43,16 +43,18 @@ services:
           .catch(e => { console.error('ping failed', e.message); process.exit(1); });
       "
 
-  # Dedicated booking cron — runs EVERY night at 00:00 SGT (= 16:00 UTC daily).
-  # Must run daily (not weekly) because a booking window opens 7 days before the
-  # target date at midnight SGT — and target dates can fall on any weekday.
-  # Each run processes any queued booking whose window just opened.
+  # Dedicated booking cron. Scheduled 3 minutes BEFORE midnight SGT
+  # (15:57 UTC = 23:57 SGT) so the container cold-starts and connects to the DB
+  # in advance; cron-entry.ts then waits for the exact 00:00 SGT boundary
+  # (16:00:00 UTC) and fires the burst at that instant — no longer ~25s late.
+  # Runs daily (not weekly) because a booking window opens 7 days before the
+  # target date at midnight SGT and target dates can fall on any weekday.
   - type: cron
     name: icondo-midnight-booker
     runtime: node
     region: singapore
     plan: starter
-    schedule: "0 16 * * *"
+    schedule: "57 15 * * *"
     buildCommand: pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build
     startCommand: node --enable-source-maps artifacts/api-server/dist/cron-entry.mjs
     envVars:
